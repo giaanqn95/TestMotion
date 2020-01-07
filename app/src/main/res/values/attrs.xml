@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="DemoDraw">
+        <attr name="textSize" format="dimension" />
+        <attr name="textColor" format="color" />
+        <attr name="indicatorColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="IntelinEditText">
+        <attr name="setTitle" format="string" />
+        <attr name="setLeftIcon" format="reference" />
+        <attr name="setRightIcon" format="reference" />
+        <attr name="setError" format="string" />
+        <attr name="setInputType" format="enum">
+            <enum name="text" value="0" />
+            <enum name="password" value="1" />
+            <enum name="number" value="2" />
+            <enum name="vntext" value="3" />
+        </attr>
+        <attr name="setTextColor" format="reference|color" />
+        <attr name="setTextUpperCase" format="boolean" />
+        <attr name="setHint" format="string" />
+        <attr name="setBackground" format="color" />
+        <attr name="currency_edt" format="string" />
+        <attr name="setDisable" format="boolean" />
+        <attr name="setMaxLenghEdt" format="integer" />
+        <attr name="text_Size" format="dimension" />
+    </declare-styleable>
+
+</resources>
