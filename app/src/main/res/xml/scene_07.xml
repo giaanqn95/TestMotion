@@ -7,22 +7,42 @@
         motion:constraintSetStart="@+id/start"
         motion:duration="1000"
         motion:motionInterpolator="linear">
+
+        <!--
+            @dragDirection(value = enum): Hướng chuyển động của view (define how the progress value will be set, from 0 to 1)
+            @touchAnchorSide(value = enum): Hướng mà view sẽ theo dõi chuyển động của ngón tay-->
         <OnSwipe
             motion:dragDirection="dragRight"
             motion:touchAnchorId="@+id/button"
             motion:touchAnchorSide="right" />
 
+        <OnClick
+            motion:clickAction="toggle"
+            motion:targetId="@+id/button" />
+
         <KeyFrameSet>
+
+            <!--Thuộc tính Key
+                @Đa số thuộc tính trong Tag này gần giống với animation-->
             <KeyAttribute
                 android:rotation="-45"
                 android:scaleX="2"
                 android:scaleY="2"
                 motion:framePosition="50"
                 motion:motionTarget="@id/button" />
+
+            <!--Vị trí key
+                @framePosition(value = 0->100): Set vị trí thực hiện hành vi của key positon
+                @percentY(value = 0.0->1): Set vị trí view sẽ chạy đến
+                @keyPositionType(value = enum):Set kiểu thực hiện hành vi
+                    -Giá trị của x và y là 0.0 -> 1.0
+                    -ParentRelative: Tạo trục tọa độ xOy tại góc dưới bên trái của màn hình
+                    -DeltaRelative: Tạo trục tọa độ xOy tại trung tâm View(sẽ là O) tại giao điểm của x=Max và y=Max sẽ là điểm kết thúc
+                    -PathRelative Tạo trục tọa độ x0y tại trung tâm của View(sẽ là O) nhưng max của x sẽ là điểm kết thúc-->
             <KeyPosition
                 motion:framePosition="50"
                 motion:keyPositionType="parentRelative"
-                motion:motionTarget="@id/button"
+                motion:motionTarget="@+id/button"
                 motion:percentY="0.2" />
         </KeyFrameSet>
     </Transition>
