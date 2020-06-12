@@ -1,17 +1,13 @@
 package com.example.testmotion
 
 import android.R.attr.radius
-import android.animation.Animator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import kotlin.math.sqrt
 
 
@@ -28,11 +24,11 @@ public class DemoDraw : View {
     private var barBackgroundColor = Color.parseColor("#00574B")
     private var barIndicatorColor = Color.parseColor("#FFFFFF")
     private var itemTextColor = Color.parseColor("#FF000000")
-    private var itemTextSize = d2p(11F)
+    private var itemTextSize = d2p(20f)
     private val rect = RectF()
     private var itemAnimDuration = DEFAULT_ANIM_DURATION
     private var indicatorLocation = d2p(10f)
-    private var text = "ABC"
+    private var text: String? = ""
 
 
     private val paintIndicator = Paint().apply {
@@ -50,7 +46,25 @@ public class DemoDraw : View {
         isFakeBoldText = true
     }
 
+    private val paintTextVND = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL
+        color = itemTextColor
+        textSize = d2p(15f)
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+    }
+
+    private var textSize = context.resources.getDimensionPixelOffset(R.dimen.sp8).toFloat()
+
     private val paintHexagon = Path()
+
+    private val corners = floatArrayOf(
+        0f, 0f,   // Top left radius in px
+        15f, 15f,   // Top right radius in px
+        15f, 15f,     // Bottom right radius in px
+        0f, 0f      // Bottom left radius in px
+    )
 
     constructor(context: Context) : super(context) {
         this.layoutParams = ViewGroup.LayoutParams(40, 50)
@@ -63,16 +77,15 @@ public class DemoDraw : View {
         defStyleAttr
     ) {
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.DemoDraw, 0, 0)
-        barBackgroundColor = typedArray.getColor(
-            R.styleable.DemoDraw_backgroundColor,
-            this.barBackgroundColor
-        )
+        barBackgroundColor =
+            typedArray.getColor(R.styleable.DemoDraw_backgroundColor, this.barBackgroundColor)
         barIndicatorColor =
             typedArray.getColor(R.styleable.DemoDraw_indicatorColor, this.barIndicatorColor)
         itemTextColor = typedArray.getColor(R.styleable.DemoDraw_textColor, this.itemTextColor)
         itemTextSize = typedArray.getDimension(R.styleable.DemoDraw_textSize, this.itemTextSize)
+        text = typedArray.getString(R.styleable.DemoDraw_textTitle)
         typedArray.recycle()
-        setBackgroundColor(barBackgroundColor)
+//        setBackgroundColor(barBackgroundColor)
         // Update default attribute values
         paintIndicator.color = barIndicatorColor
         paintText.color = itemTextColor
@@ -88,18 +101,6 @@ public class DemoDraw : View {
     override fun onDraw(canvas: Canvas) {
         Log.d("AAAAAAA", "onDraw Called")
         super.onDraw(canvas)
-        // Draw indicator
-        rect.left = width - 10f
-        rect.top = 100f
-        rect.right = 10f
-        rect.bottom = 50f
-//        canvas.drawRoundRect(rect, 20f, 20f, paintIndicator)
-//        canvas.drawText(
-//            text,
-//            (width / 2).toFloat(),
-//            ((height + itemTextSize) / 2),
-//            paintText
-//        )
 
         val paintPoint = Paint()
         paintPoint.color = barIndicatorColor
@@ -128,123 +129,108 @@ public class DemoDraw : View {
          * Còn hình vuông và hình chữ nhật không biết vẽ nữa là tao quỳ
          */
         val paint = Paint()
-        val point1_draw = Point(0, 0)
-        val point2_draw = Point(0, height / 2)
-        val point3_draw = Point(0, height)
-        val point4_draw = Point(width / 4, height)
-        val point5_draw = Point(width / 2, height)
-        val point6_draw = Point(width * 3 / 4, height)
-        val point7_draw = Point(width, height)
-        val point8_draw = Point(width, 0)
-        val point9_draw = Point(width * 3 / 4, 0)
-        val point10_draw = Point(width / 2, height * 2)
-        val point11_draw = Point(width / 4, 0)
-        val point12_draw = Point(width, 0)
+        val point1_draw = Point(0, 15)
+        val point2_draw = Point(30, 0)
+        val point3_draw = Point(30, height)
+        val point4_draw = Point(0, height - 15)
         val path = Path()
         path.moveTo(point1_draw.x.toFloat(), point1_draw.y.toFloat())
         path.lineTo(point2_draw.x.toFloat(), point2_draw.y.toFloat())
         path.lineTo(point3_draw.x.toFloat(), point3_draw.y.toFloat())
         path.lineTo(point4_draw.x.toFloat(), point4_draw.y.toFloat())
-        path.lineTo(point5_draw.x.toFloat(), point5_draw.y.toFloat())
-        path.lineTo(point6_draw.x.toFloat(), point6_draw.y.toFloat())
-        path.lineTo(point7_draw.x.toFloat(), point7_draw.y.toFloat())
-        path.lineTo(point8_draw.x.toFloat(), point8_draw.y.toFloat())
-        path.lineTo(point9_draw.x.toFloat(), point9_draw.y.toFloat())
-        path.quadTo(
-            (width / 2).toFloat(),
-            (height).toFloat(),
-            (width / 4).toFloat(),
-            0F
-        )
-
-        path.quadTo(
-            (0).toFloat(),
-            (0).toFloat(),
-            (width / 4).toFloat(),
-            0F
-        )
-
-
-//        path.lineTo(point12_draw.x.toFloat(), point12_draw.y.toFloat())
 
         path.close()
         paint.color = Color.parseColor("#BAB399")
         canvas.drawPath(path, paint)
 
-//        paintHexagon.moveTo(centerX, centerY + radius)
-//        paintHexagon.lineTo(centerX - triangleHeight, centerY + radius / 2)
-//        paintHexagon.lineTo(centerX - triangleHeight, centerY - radius / 2)
-//        paintHexagon.lineTo(centerX, centerY - radius)
-//        paintHexagon.lineTo(centerX + triangleHeight, centerY - radius / 2)
-//        paintHexagon.lineTo(centerX + triangleHeight, centerY + radius / 2)
-//        paintHexagon.moveTo(centerX, centerY + radius)
 
-//        canvas.clipPath(paintHexagon)
-    }
+        text?.let {
+            val strokePaint = Paint()
+            strokePaint.color = resources.getColor(R.color.error)
+            strokePaint.style = Paint.Style.FILL
+            strokePaint.strokeWidth =
+                context.resources.getDimensionPixelOffset(R.dimen.sp1).toFloat()
+            val rectBorder = RectF(
+                0f,
+                15f,
+                paintText.measureText("$it VND") + 10,
+                height - 15f
+            )
+            val path2 = Path()
+            path2.addRoundRect(rectBorder, corners, Path.Direction.CW)
+            canvas.drawPath(path2, strokePaint)
 
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        animateAlpha()
-        return true
-    }
-
-    private fun animateAlpha() {
-        val defaultAlpha = paintText.alpha
-        val animator = ValueAnimator.ofInt(paintText.alpha, 0)
-        animator.duration = itemAnimDuration
-        animator.addUpdateListener {
-            val value = it.animatedValue as Int
-            paintText.alpha = value
-            invalidate()
+            canvas.drawText(
+                it,
+                paintText.measureText("$text") / 2 + 20,
+                ((height - 15) / 2).toFloat() + paintText.textSize / 2,
+                paintText
+            )
+            canvas.drawText(
+                "VND",
+                paintText.measureText("$text") / 2 + paintText.measureText("$text VND") / 2 + 10,
+                ((height - 15) / 2).toFloat() + paintTextVND.textSize / 2,
+                paintTextVND
+            )
         }
 
-        animator.addListener(object : Animator.AnimatorListener,
-            ValueAnimator.AnimatorUpdateListener {
-            override fun onAnimationRepeat(p0: Animator?) {
+        paintHexagon.moveTo(centerX, centerY + radius)
+        paintHexagon.lineTo(centerX - triangleHeight, centerY + radius / 2)
+        paintHexagon.lineTo(centerX - triangleHeight, centerY - radius / 2)
+        paintHexagon.lineTo(centerX, centerY - radius)
+        paintHexagon.lineTo(centerX + triangleHeight, centerY - radius / 2)
+        paintHexagon.lineTo(centerX + triangleHeight, centerY + radius / 2)
+        paintHexagon.moveTo(centerX, centerY + radius)
 
-            }
-
-            override fun onAnimationEnd(p0: Animator) {
-                text = "XYZ"
-                val a = ValueAnimator.ofInt(0, defaultAlpha)
-                a.duration = itemAnimDuration
-
-                a.addUpdateListener {
-                    val value = it.animatedValue as Int
-                    paintIndicator.alpha = value
-                    invalidate()
-                }
-                a.start()
-            }
-
-            override fun onAnimationCancel(p0: Animator?) {
-            }
-
-            override fun onAnimationStart(p0: Animator?) {
-            }
-
-            override fun onAnimationUpdate(p0: ValueAnimator?) {
-
-            }
-
-        })
-
-        animator.start()
-    }
-
-    private fun animateIndicator(pos: Int) {
-        val animator = ValueAnimator.ofFloat(indicatorLocation, 10f)
-        animator.duration = itemAnimDuration
-        animator.interpolator = DecelerateInterpolator()
-
-        animator.addUpdateListener { animation ->
-            indicatorLocation = animation.animatedValue as Float
-        }
-
-        animator.start()
     }
 
     private fun d2p(dp: Float): Float {
         return resources.displayMetrics.densityDpi.toFloat() / 160.toFloat() * dp
+    }
+
+    var widthMeasure: Int = 0
+    var heightMeasure: Int = 0
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var desiredWidth = (paintText.measureText("1.000 VND") + 50).toInt()
+        val desiredHeight = 100
+        text?.let {
+            desiredWidth = (paintText.measureText("$text VND") + 50).toInt()
+        }
+
+        //Measure Width
+        widthMeasure = when {
+            MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY -> {
+                //Must be this size
+                MeasureSpec.getSize(widthMeasureSpec)
+            }
+            MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.AT_MOST -> {
+                //Can't be bigger than...
+                desiredWidth.coerceAtMost(MeasureSpec.getSize(widthMeasureSpec))
+            }
+            else -> {
+                //Be whatever you want
+                desiredWidth
+            }
+        }
+
+        //Measure Height
+        heightMeasure = when {
+            MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY -> {
+                //Must be this size
+                MeasureSpec.getSize(heightMeasureSpec)
+            }
+            MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST -> {
+                //Can't be bigger than...
+                desiredHeight.coerceAtMost(MeasureSpec.getSize(heightMeasureSpec))
+            }
+            else -> {
+                //Be whatever you want
+                desiredHeight
+            }
+        }
+
+        //MUST CALL THIS
+        setMeasuredDimension(widthMeasure, heightMeasure)
     }
 }
